@@ -18,9 +18,9 @@ class AmazonItem(scrapy.Item):
         try:
             return re.search('\((.*)\) from ', seller).group(1)
         except:
-            return "1"
+            return "n/a"
     
-        return "1"
+        return "n/a"
 
     def tr(value):
         
@@ -36,23 +36,33 @@ class AmazonItem(scrapy.Item):
         return value.split(" inches; ")[1]
     def reaplacedimension(value):
         return value.replace('Package Dimensions:',"").strip()
+    def cleanrating(value):
+    	return value.replace(' out of 5 stars',"").strip()
+    def cleanweight(value):
+        if len(value) <=2:
+            return "n/a"
+        return value
+    def cleandimension(value):
+        if len(value) <=3:
+            return "n/a"
+        return value.replace('inches',"").strip()
+    def cleandollarsign(value):
+        return value.replace('$','').strip()
 
 
     url = scrapy.Field(input_processor=MapCompose(addurl),output_processor = TakeFirst())
     img = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
     title = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
-    rating = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
+    rating = scrapy.Field(input_processor=MapCompose(remove_tags,cleanrating),output_processor = TakeFirst())
     reviews = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
-    price = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
+    price = scrapy.Field(input_processor=MapCompose(remove_tags,cleandollarsign),output_processor = TakeFirst())
     brand = scrapy.Field(input_processor=MapCompose(remove_tags,brandclean),output_processor = TakeFirst())
     ASIN = scrapy.Field(output_processor = TakeFirst())
-    weight = scrapy.Field(output_processor = TakeFirst())
+    weight = scrapy.Field(input_processor=MapCompose(cleanweight), output_processor = TakeFirst())
     buybox = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
     bestseller = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,replacebestseller,replacebestseller2),output_processor = TakeFirst())
     activeseller = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,activeseller_clean),output_processor = TakeFirst())
-    Dimensions = scrapy.Field(output_processor = TakeFirst())
+    Dimensions = scrapy.Field(input_processor=MapCompose(cleandimension), output_processor = TakeFirst())
     firstdate = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace),output_processor = TakeFirst())
 
-test = ''
-#print(AmazonItem.replacenewspace(remove_tags(test)))
-print(AmazonItem.activeseller_clean(AmazonItem.replacenewspace(remove_tags(test))))
+

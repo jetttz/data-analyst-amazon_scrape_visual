@@ -14,7 +14,7 @@ from ..items import AmazonItem
 class searchquery(scrapy.Spider):
 	name = 'listing'
 	count = 1
-	start_urls =['https://www.amazon.com/s?k=pen']
+	start_urls =['https://www.amazon.com/s?k=bed']
 	def replacenewspace(self,value):
 		return value.replace('\n',"").strip()
 	def reaplacedimension(self,value):
@@ -48,19 +48,24 @@ class searchquery(scrapy.Spider):
 	def parse_2(self,response):
 		l = ItemLoader(item=AmazonItem(),selector=response, parent=response.meta['loader'])
 		l.add_css('brand','a[id="bylineInfo"]')
-		if len(response.css('span.tabular-buybox-text')) >0:
-			l.add_css('buybox','span.tabular-buybox-text')
-		else:
+		if len(response.xpath('//*[@id="sellerProfileTriggerId"]')) >0:
 			l.add_css('buybox','a[id="sellerProfileTriggerId"]')
 			
-		l.add_xpath('activeseller','//*[@id="olp_feature_div"]/div[2]')
+		else:
+			l.add_css('buybox','span.tabular-buybox-text')
+			
+
+		if len(response.xpath('//*[@id="olp_feature_div"]/div[2]')) < 1:	
+			l.add_value('activeseller','n/a')
+		else:
+			l.add_xpath('activeseller','//*[@id="olp_feature_div"]/div[2]')
 		
 		if len(response.css('div.a-row.a-spacing-base').css('tr')) > 0:
 
 			for infoss in response.css('div.a-row.a-spacing-base').css('tr'):
 				c = ItemLoader(item=AmazonItem(),selector=infoss, parent=response.meta['loader'])
 
-				if 'Item Weight' in self.replacenewspace(infoss.get()):
+				if 'Weight' in self.replacenewspace(infoss.get()):
 					c.add_value('weight',self.replacenewspace(remove_tags(infoss.css('td::text').get())))
 				elif 'inches' in self.replacenewspace(infoss.get()) :
 					c.add_value('Dimensions',self.replacenewspace(remove_tags(infoss.css('td::text').get())))
