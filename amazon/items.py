@@ -50,7 +50,7 @@ class AmazonItem(scrapy.Item):
         return value.replace('$','').strip()
 
 
-    url = scrapy.Field(input_processor=MapCompose(addurl),output_processor = TakeFirst())
+    url = scrapy.Field(input_processor=MapCompose(addurl), output_processor = TakeFirst())
     img = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
     title = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
     rating = scrapy.Field(input_processor=MapCompose(remove_tags,cleanrating),output_processor = TakeFirst())
