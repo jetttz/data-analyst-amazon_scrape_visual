@@ -49,7 +49,7 @@ class AmazonItem(scrapy.Item):
     def cleanreviews(value):
         return value.replace(',','').strip()
     def cleanreviews2(value):
-        if 'save' in value:
+        if 'Save' in value or 'save' in value:
             return 'n/a'
         else:
             return value
@@ -64,13 +64,12 @@ class AmazonItem(scrapy.Item):
         except:
             return value
 
-
     url = scrapy.Field(input_processor=MapCompose(addurl), output_processor = TakeFirst())
     img = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
     title = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace),output_processor = TakeFirst())
     rating = scrapy.Field(input_processor=MapCompose(remove_tags,cleanrating),output_processor = TakeFirst())
     reviews = scrapy.Field(input_processor=MapCompose(remove_tags,cleanreviews,cleanreviews2),output_processor = TakeFirst())
-    price = scrapy.Field(input_processor=MapCompose(remove_tags,cleandollarsign),output_processor = TakeFirst())
+    price = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
     brand = scrapy.Field(input_processor=MapCompose(remove_tags,brandclean),output_processor = TakeFirst())
     ASIN = scrapy.Field(output_processor = TakeFirst())
     description = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,cleandescription),output_processor = TakeFirst())

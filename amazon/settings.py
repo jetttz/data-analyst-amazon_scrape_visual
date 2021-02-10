@@ -18,19 +18,43 @@ NEWSPIDER_MODULE = 'amazon.spiders'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
-
+'''
+SCRAPERAPI_ENABLED = True
+SCRAPERAPI_KEY= '821eebba1c9e7919936a02dfff6263b1'
+SCRAPERAPI_RENDER = False
+SCRAPERAPI_PREMIUM = False
+SCRAPERAPI_COUNTRY_CODE = 'US' # 'US', 'UK', ...
+#PROXY_POOL_ENABLED = True
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
-
+'''
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 1
-
+DOWNLOAD_DELAY = 2
+'''
+ROTATING_PROXY_LIST = [
+    'http://34.87.161.90:80',
+    'http://192.53.116.190:8080',
+    # ...
+]
+'''
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
+   # 'scrapyx_scraperapi.ScraperApiProxyMiddleware': 500,
+
 }
+
+'''
+DOWNLOADER_MIDDLEWARES = {
+    # ...
+    'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
+    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
+    # ...
+}
+'''
+
 
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
