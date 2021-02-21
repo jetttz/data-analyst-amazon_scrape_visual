@@ -12,7 +12,7 @@ from ..items import AmazonItem
 class searchquery(scrapy.Spider):
 	name = 'listing'
 	
-	start_urls =['https://www.amazon.com/s?k=iphone+case']
+	start_urls =['https://www.amazon.com/s?k=pen']
 	
 	
 	def replacenewspace(self,value):
@@ -58,7 +58,7 @@ class searchquery(scrapy.Spider):
 			for infoss in response.css('div.a-row.a-spacing-base').css('tr'):
 				c = ItemLoader(item=AmazonItem(),selector=infoss, parent=response.meta['loader'])
 				if 'Weight' in self.replacenewspace(infoss.get()):
-					c.add_css('weight','td')
+					c.add_css('weight_lbs','td')
 				elif 'inches' in self.replacenewspace(infoss.get()):
 					c.add_css('Dimensions','td')
 				elif 'Date First' in self.replacenewspace(infoss.get()):
@@ -73,7 +73,7 @@ class searchquery(scrapy.Spider):
 
 				if 'inches' in self.replacenewspace(info.get()) and 'Ounces' in self.replacenewspace(info.get()) or 'pounds' in self.replacenewspace(info.get()):
 
-					d.add_value('weight',self.getweight(remove_tags(info.css('span').get()))[1])
+					d.add_value('weight_lbs',self.getweight(remove_tags(info.css('span').get()))[1])
 					d.add_value('Dimensions',self.getweight(remove_tags(info.css('span').get()))[0])
 
 				elif 'Date First' in self.replacenewspace(info.get()):

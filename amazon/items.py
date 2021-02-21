@@ -63,17 +63,23 @@ class AmazonItem(scrapy.Item):
             return value.replace(re.findall(r"\(.*?\)", value)[0],'')    
         except:
             return value
+    def ouncestolbs(value):
+        base = 0.0625
+
+        if 'ounces' in value or 'ounce' in value:
+            return float(value.replace('ounces','')) * base
+        return float(value.replace('Pounds','').replace('lbs',''))
 
     url = scrapy.Field(input_processor=MapCompose(addurl), output_processor = TakeFirst())
     img = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
     title = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace),output_processor = TakeFirst())
     rating = scrapy.Field(input_processor=MapCompose(remove_tags,cleanrating),output_processor = TakeFirst())
     reviews = scrapy.Field(input_processor=MapCompose(remove_tags,cleanreviews,cleanreviews2),output_processor = TakeFirst())
-    price = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
+    price = scrapy.Field(input_processor=MapCompose(remove_tags,cleandollarsign),output_processor = TakeFirst())
     brand = scrapy.Field(input_processor=MapCompose(remove_tags,brandclean),output_processor = TakeFirst())
     ASIN = scrapy.Field(output_processor = TakeFirst())
     description = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,cleandescription),output_processor = TakeFirst())
-    weight = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace),output_processor = TakeFirst())
+    weight_lbs = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,ouncestolbs),output_processor = TakeFirst())
     buybox = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
     bestseller = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,replacebestseller,replacebestseller2,cleanbestseller,cleanbestseller2),output_processor = TakeFirst())
     activeseller = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,activeseller_clean),output_processor = TakeFirst())
