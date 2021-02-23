@@ -12,7 +12,7 @@ from ..items import AmazonItem
 class searchquery(scrapy.Spider):
 	name = 'listing'
 	
-	start_urls =['https://www.amazon.com/s?k=pen']
+	start_urls =['https://www.amazon.com/s?k=iphone+charger']
 	
 	
 	def replacenewspace(self,value):
@@ -44,7 +44,7 @@ class searchquery(scrapy.Spider):
 		
 		l.add_css('title','span[id="productTitle"]')
 		l.add_css('brand','a[id="bylineInfo"]')
-		l.add_css('description','ul.a-unordered-list.a-vertical.a-spacing-mini')
+		l.add_value('description',''.join(list(map(lambda a : a.encode('ascii', errors='ignore').decode('utf-8'),response.css('ul.a-unordered-list.a-vertical.a-spacing-mini').css('span.a-list-item::text').getall()))))
 
 		if len(response.xpath('//*[@id="sellerProfileTriggerId"]')) >0:
 			l.add_css('buybox','a[id="sellerProfileTriggerId"]')

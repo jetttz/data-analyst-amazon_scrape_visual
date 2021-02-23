@@ -53,7 +53,7 @@ class AmazonPipeline:
 		item.setdefault('reviews','0')
 		item.setdefault('price','0')
 		item.setdefault('ASIN','n/a')
-		item.setdefault('weight_lbs','n/a')
+		item.setdefault('weight_lbs','0')
 		item.setdefault('buybox','n/a')
 		item.setdefault('bestseller','n/a')
 		item.setdefault('activeseller','0')

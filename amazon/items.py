@@ -53,8 +53,6 @@ class AmazonItem(scrapy.Item):
             return 'n/a'
         else:
             return value
-    def cleandescription(value):
-        return value.replace('This fits your','').strip()
     def cleanbestseller(value):
         return value.replace('amp;','').strip()
 
@@ -64,11 +62,12 @@ class AmazonItem(scrapy.Item):
         except:
             return value
     def ouncestolbs(value):
-        base = 0.0625
+        
 
-        if 'ounces' in value or 'ounce' in value:
-            return float(value.replace('ounces','')) * base
-        return float(value.replace('Pounds','').replace('lbs',''))
+        if 'ounces' in value or 'ounce' in value or 'Ounces' in value:
+            return float(value.replace('ounces','').replace('Ounces','').replace('ounce','')) * 0.0625
+            
+        return float(value.replace('Pounds','').replace('lbs','').replace('pounds',''))
 
     url = scrapy.Field(input_processor=MapCompose(addurl), output_processor = TakeFirst())
     img = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
@@ -78,7 +77,7 @@ class AmazonItem(scrapy.Item):
     price = scrapy.Field(input_processor=MapCompose(remove_tags,cleandollarsign),output_processor = TakeFirst())
     brand = scrapy.Field(input_processor=MapCompose(remove_tags,brandclean),output_processor = TakeFirst())
     ASIN = scrapy.Field(output_processor = TakeFirst())
-    description = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,cleandescription),output_processor = TakeFirst())
+    description = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace),output_processor = TakeFirst())
     weight_lbs = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,ouncestolbs),output_processor = TakeFirst())
     buybox = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
     bestseller = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,replacebestseller,replacebestseller2,cleanbestseller,cleanbestseller2),output_processor = TakeFirst())
