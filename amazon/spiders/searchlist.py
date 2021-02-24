@@ -12,7 +12,7 @@ from ..items import AmazonItem
 class searchquery(scrapy.Spider):
 	name = 'listing'
 	
-	start_urls =['https://www.amazon.com/s?k=iphone+charger']
+	start_urls =['https://www.amazon.com/s?k=TV']
 	
 	
 	def replacenewspace(self,value):
@@ -26,9 +26,6 @@ class searchquery(scrapy.Spider):
 			a = ItemLoader(item=AmazonItem(),selector=products)
 			a.add_css('url','a.a-link-normal.a-text-normal::attr(href)')
 			a.add_css('img','img::attr(src)')
-			a.add_css('rating','span.a-icon-alt')
-			a.add_css('reviews','span.a-size-base')
-			a.add_css('price','span.a-offscreen')
 			a.add_css('ASIN','div.s-result-item.s-asin::attr(data-asin)')
 			yield scrapy.Request('https://www.amazon.com'+ products.css('a.a-link-normal.a-text-normal::attr(href)').get(), callback=self.parse_2, meta={'loader': a},)
 
@@ -41,8 +38,18 @@ class searchquery(scrapy.Spider):
 			
 	def parse_2(self,response):
 		l = ItemLoader(item=AmazonItem(),selector=response, parent=response.meta['loader'])
+		l.add_value('rating',response.css('span.reviewCountTextLinkedHistogram.noUnderline::attr(title)').get())
+		l.add_css('reviews','span[id="acrCustomerReviewText"]')
 		
 		l.add_css('title','span[id="productTitle"]')
+		
+		if len(response.css('span[id="newBuyBoxPrice"]'))>0:
+			l.add_css('price','span[id="newBuyBoxPrice"]')
+		elif len(response.css('span.a-size-medium.a-color-price.offer-price.a-text-normal')) >0:
+			l.add_css('price','span.a-size-medium.a-color-price.offer-price.a-text-normal')
+		else:
+			l.add_css('price','span[id="price_inside_buybox"]')
+
 		l.add_css('brand','a[id="bylineInfo"]')
 		l.add_value('description',''.join(list(map(lambda a : a.encode('ascii', errors='ignore').decode('utf-8'),response.css('ul.a-unordered-list.a-vertical.a-spacing-mini').css('span.a-list-item::text').getall()))))
 

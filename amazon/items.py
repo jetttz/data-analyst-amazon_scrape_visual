@@ -18,9 +18,9 @@ class AmazonItem(scrapy.Item):
         try:
             return re.search('\((.*)\) from ', seller).group(1)
         except:
-            return "n/a"
+            return "0"
     
-        return "n/a"
+        return "0"
 
     def tr(value):
         
@@ -43,16 +43,19 @@ class AmazonItem(scrapy.Item):
     def cleandimension(value):
         return value.replace('inches',"").strip()
     def cleandollarsign(value):
-        return value.replace('$','').strip()
+        return value.replace('$','').replace(',','').strip()
     def reaplaceddatefirst(value):
         return value.replace('Date First Available:',"").strip()
+
     def cleanreviews(value):
-        return value.replace(',','').strip()
+        return value.replace(',','').replace(' ratings','').replace(' rating','').strip()
     def cleanreviews2(value):
         if 'Save' in value or 'save' in value:
-            return 'n/a'
+            return '0'
         else:
             return value
+
+
     def cleanbestseller(value):
         return value.replace('amp;','').strip()
 
@@ -68,18 +71,21 @@ class AmazonItem(scrapy.Item):
             return float(value.replace('ounces','').replace('Ounces','').replace('ounce','')) * 0.0625
             
         return float(value.replace('Pounds','').replace('lbs','').replace('pounds',''))
-
+    def cleanamazonbrand(value):
+        if 'Amazon' in value or 'amazon' in value:
+            return 'amazon'
+        return value
     url = scrapy.Field(input_processor=MapCompose(addurl), output_processor = TakeFirst())
     img = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
     title = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace),output_processor = TakeFirst())
     rating = scrapy.Field(input_processor=MapCompose(remove_tags,cleanrating),output_processor = TakeFirst())
     reviews = scrapy.Field(input_processor=MapCompose(remove_tags,cleanreviews,cleanreviews2),output_processor = TakeFirst())
-    price = scrapy.Field(input_processor=MapCompose(remove_tags,cleandollarsign),output_processor = TakeFirst())
-    brand = scrapy.Field(input_processor=MapCompose(remove_tags,brandclean),output_processor = TakeFirst())
+    price = scrapy.Field(input_processor=MapCompose(remove_tags,cleandollarsign,replacenewspace),output_processor = TakeFirst())
+    brand = scrapy.Field(input_processor=MapCompose(remove_tags,brandclean,cleanamazonbrand),output_processor = TakeFirst())
     ASIN = scrapy.Field(output_processor = TakeFirst())
     description = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace),output_processor = TakeFirst())
     weight_lbs = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,ouncestolbs),output_processor = TakeFirst())
-    buybox = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor = TakeFirst())
+    buybox = scrapy.Field(input_processor=MapCompose(remove_tags,cleanamazonbrand),output_processor = TakeFirst())
     bestseller = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,replacebestseller,replacebestseller2,cleanbestseller,cleanbestseller2),output_processor = TakeFirst())
     activeseller = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,activeseller_clean),output_processor = TakeFirst())
     Dimensions = scrapy.Field(input_processor=MapCompose(remove_tags,replacenewspace,reaplacedimension,reaplacedimension2,cleandimension), output_processor = TakeFirst())

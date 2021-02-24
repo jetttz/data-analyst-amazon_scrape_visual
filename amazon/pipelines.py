@@ -10,6 +10,7 @@ from scrapy.exporters import CsvItemExporter
 import sys,psycopg2
 
 class AmazonPipeline:
+	'''
 	def open_spider(self,spider):
 		self.file = open("listing.csv", 'wb')
 		self.exporter = CsvItemExporter(self.file)
@@ -27,8 +28,8 @@ class AmazonPipeline:
 		self.conn.close()
 		self.exporter.finish_exporting()
 		self.file.close()
-
-	'''
+'''
+	
 	def open_spider(self,spider):
 		self.file = open("listing.csv", 'wb')
 		
@@ -42,7 +43,7 @@ class AmazonPipeline:
 		
 		self.file.close()
 		
-	'''	
+		
 	def process_item(self,item,spider):
 		item.setdefault('Dimensions','n/a')
 		item.setdefault('url','n/a')
@@ -63,9 +64,7 @@ class AmazonPipeline:
 		#self.cursor.execute("insert into iphone_charger(description) values(%s)",(item['description'],))
 		#self.cursor.execute(url)
 		self.exporter.export_item(item)
-		self.cursor.execute("insert into iphone_charger(url,img,title,rating,reviews,price,brand,asin,description,weight_lbs,buybox,bestseller,activeseller,dimensions,firstdate) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(item['url'],item['img'],item['title'],item['rating'],item['reviews'],item['price'],item['brand'],item['ASIN'],item['description'],item['weight_lbs'],item['buybox'],item['bestseller'],item['activeseller'],item['Dimensions'],item['firstdate']))
-		
-
+		#self.cursor.execute("insert into iphone_charger(url,img,title,rating,reviews,price,brand,asin,description,weight_lbs,buybox,bestseller,activeseller,dimensions,firstdate) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(item['url'],item['img'],item['title'],item['rating'],item['reviews'],item['price'],item['brand'],item['ASIN'],item['description'],item['weight_lbs'],item['buybox'],item['bestseller'],item['activeseller'],item['Dimensions'],item['firstdate']))
 		return item
 
 
