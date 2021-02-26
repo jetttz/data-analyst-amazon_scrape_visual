@@ -5,14 +5,14 @@ from scrapy.loader import ItemLoader
 #from scrapy.crawler import CrawlerRunner
 #from scrapy.utils.log import configure_logging
 from w3lib.html import remove_tags
-#import sys
-#sys.path.append('../')
-from ..items import AmazonItem
+import sys
+sys.path.append('../')
+from items import AmazonItem
 
 class searchquery(scrapy.Spider):
 	name = 'listing'
 
-	searchitem = 'iphone charger'
+	searchitem = 'mouse trap'
 	
 	start_urls =['https://www.amazon.com/s?k='+searchitem.replace(' ','+').strip()]
 	
@@ -31,10 +31,10 @@ class searchquery(scrapy.Spider):
 			a.add_css('ASIN','div.s-result-item.s-asin::attr(data-asin)')
 			yield scrapy.Request('https://www.amazon.com'+ products.css('a.a-link-normal.a-text-normal::attr(href)').get(), callback=self.parse_2, meta={'loader': a},)
 
-		next_page = response.css("li.a-last").css("a::attr(href)").get()
+		#next_page = response.css("li.a-last").css("a::attr(href)").get()
 
-		if next_page:
-			yield scrapy.Request('https://www.amazon.com'+next_page, callback=self.parse)
+		#if next_page:
+			#yield scrapy.Request('https://www.amazon.com'+next_page, callback=self.parse)
 			
 			
 			
