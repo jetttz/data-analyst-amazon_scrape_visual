@@ -11,8 +11,10 @@ from ..items import AmazonItem
 
 class searchquery(scrapy.Spider):
 	name = 'listing'
+
+	searchitem = 'iphone charger'
 	
-	start_urls =['https://www.amazon.com/s?k=Shaver']
+	start_urls =['https://www.amazon.com/s?k='+searchitem.replace(' ','+').strip()]
 	
 	
 	def replacenewspace(self,value):
@@ -78,7 +80,7 @@ class searchquery(scrapy.Spider):
 			for info in response.css('ul.a-unordered-list.a-nostyle.a-vertical.a-spacing-none.detail-bullet-list').css('li'):
 				d = ItemLoader(item=AmazonItem(),selector=info, parent=response.meta['loader'])
 
-				if 'inches' in self.replacenewspace(info.get()) and 'Ounces' in self.replacenewspace(info.get()) or 'pounds' in self.replacenewspace(info.get()):
+				if 'inches' in self.replacenewspace(info.get()) or 'inches;' in self.replacenewspace(info.get()) and 'Ounces' in self.replacenewspace(info.get()) or 'pounds' in self.replacenewspace(info.get()) or 'Pounds' in self.replacenewspace(info.get()):
 
 					d.add_value('weight_lbs',self.getweight(remove_tags(info.css('span').get()))[1])
 					d.add_value('Dimensions',self.getweight(remove_tags(info.css('span').get()))[0])
