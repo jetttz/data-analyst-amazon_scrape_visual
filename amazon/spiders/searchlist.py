@@ -12,7 +12,7 @@ from ..items import AmazonItem
 class searchquery(scrapy.Spider):
 	name = 'listing'
 	
-	start_urls =['https://www.amazon.com/s?k=TV']
+	start_urls =['https://www.amazon.com/s?k=Shaver']
 	
 	
 	def replacenewspace(self,value):
