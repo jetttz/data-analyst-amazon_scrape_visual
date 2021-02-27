@@ -5,9 +5,10 @@ import matplotlib.backends.backend_pdf
 from matplotlib.backends.backend_pdf import PdfPages
 import sys,os
 from sqlalchemy import create_engine
-#import psycopg2
+import psycopg2
+sys.path.append('../..')
+from spiders import *
 
-from amazon.visual import a
 
 class visual:
 

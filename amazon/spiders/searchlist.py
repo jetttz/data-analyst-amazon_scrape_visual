@@ -6,8 +6,8 @@ from scrapy.loader import ItemLoader
 #from scrapy.utils.log import configure_logging
 from w3lib.html import remove_tags
 import sys
-sys.path.append('../')
-from items import AmazonItem
+sys.path.append('..')
+from items import *
 
 class searchquery(scrapy.Spider):
 	name = 'listing'

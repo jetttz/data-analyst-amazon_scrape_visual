@@ -1,8 +1,8 @@
 from itemadapter import ItemAdapter
 from scrapy.exporters import CsvItemExporter
 import sys,psycopg2,os
-sys.path.append(os.getcwd()+'/spiders')
-import searchlist
+
+from spiders import searchlist
 
 class AmazonPipeline:
 	
