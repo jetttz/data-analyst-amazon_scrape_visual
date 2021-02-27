@@ -1,34 +1,37 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.backends.backend_pdf
 from matplotlib.backends.backend_pdf import PdfPages
-import sys,os
+import sys
 from sqlalchemy import create_engine
 import psycopg2
 sys.path.append('../..')
 from spiders import *
 
-
 class visual:
 
 	def __init__(self):
 		self.engine = create_engine('postgresql://pi:maoping@192.168.1.185:5432/amazon')
-		self.df = pd.read_sql_table('mouse_trap',self.engine)
-		self.hostname = '192.168.1.185'
-		self.username = 'pi'
-		self.password = 'maoping'
-		self.database='amazon'
-		self.pp = PdfPages('multipage.pdf')
-
-		self.conn = psycopg2.connect(host = self.hostname,database=self.database,user=self.username, password=self.password, port = 5432)
-		self.conn.autocommit = True
-		self.cursor = self.conn.cursor()
+		
+		query = '''
+		SELECT * FROM TV;
+		'''
+		self.df = pd.read_sql(query,self.engine)
+		#self.hostname = '192.168.1.185'
+		#self.username = 'pi'
+		#self.password = 'maoping'
+		#self.database='amazon'
+		self.pp = PdfPages('{}.pdf'.format(searchquery.searchitem.replace(' ','_')))
+		#self.conn = psycopg2.connect(host = self.hostname,database=self.database,user=self.username, password=self.password, port = 5432)
+		#self.conn.autocommit = True
+		#self.cursor = self.conn.cursor()
 	
 
 	def close_database(self):
-		self.cursor.close()
-		self.conn.close()
+		self.engine.dispose()
+		self.pp.close()
+		#self.cursor.close()
+		#self.conn.close()
 	
 
 	def price_range(self):
@@ -63,8 +66,8 @@ class visual:
 		plt.title('Price Range\n\n Average Price: $' + str(np.around(mean, decimals=2)))
 		plt.axis('equal')
 		plt.tight_layout()
-		#plt.savefig(self.pp, format='pdf')
-		#return plt
+		plt.savefig(self.pp, format='pdf')
+
 	def clean_brand(self):
 		df = self.df.replace('n/a',np.NaN)
 		for holder in df['brand']:
@@ -100,9 +103,9 @@ class visual:
 		plt.title('Top '+ str(top) +' brands\n\n Total # of brands: ' + str(len(brand)))
 		plt.axis('equal')
 		plt.tight_layout()
-		#plt.savefig(self.pp, format='pdf')
-		#self.pp.close()
-		plt.show()
+		plt.savefig(self.pp, format='pdf')
+		
+		#plt.show()
 
 
 
@@ -113,6 +116,7 @@ class visual:
 
 if __name__ == "__main__":
 	obj = visual()
-	#obj.price_range()
-	#obj.brand()
+	obj.price_range()
+	obj.brand()
+	obj.close_database()
 

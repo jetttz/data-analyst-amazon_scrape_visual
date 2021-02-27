@@ -17,7 +17,7 @@ class AmazonPipeline:
 		self.conn = psycopg2.connect(host = self.hostname,database=self.database,user=self.username, password=self.password, port = 5432)
 		self.conn.autocommit = True
 		self.cursor = self.conn.cursor()
-		self.filename = searchlist.searchquery.searchitem.replace(' ','_').strip()
+		self.filename = searchlist.searchquery.searchitem.replace(' ','_')
 		self.cursor.execute('DROP TABLE IF EXISTS {};'.format(self.filename))
 		self.cursor.execute('CREATE TABLE {} (url TEXT,img TEXT,title TEXT,rating FLOAT,reviews FLOAT,price FLOAT,brand TEXT,ASIN  TEXT,description TEXT,weight_lbs  FLOAT,buybox TEXT,bestseller TEXT,activeseller FLOAT,Dimensions TEXT,firstdate TEXT);'.format(self.filename))
 
