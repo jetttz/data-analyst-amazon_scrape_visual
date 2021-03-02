@@ -12,7 +12,7 @@ from items import *
 class searchquery(scrapy.Spider):
 	name = 'listing'
 
-	searchitem = 'pen'
+	searchitem = 'Shaver'
 	
 	start_urls =['https://www.amazon.com/s?k='+searchitem.replace(' ','+').strip()]
 	

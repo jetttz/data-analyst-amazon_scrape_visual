@@ -13,14 +13,13 @@ class visual:
 	def __init__(self):
 		self.engine = create_engine('postgresql://pi:maoping@192.168.1.185:5432/amazon')
 		
-		query = '''
-		SELECT * FROM TV;
-		'''
+		query = '''SELECT * FROM Shaver; '''
 		self.df = pd.read_sql(query,self.engine)
 		#self.hostname = '192.168.1.185'
 		#self.username = 'pi'
 		#self.password = 'maoping'
 		#self.database='amazon'
+		self.labels = ''
 		self.pp = PdfPages('{}.pdf'.format(searchquery.searchitem.replace(' ','_')))
 		#self.conn = psycopg2.connect(host = self.hostname,database=self.database,user=self.username, password=self.password, port = 5432)
 		#self.conn.autocommit = True
@@ -33,7 +32,6 @@ class visual:
 		#self.cursor.close()
 		#self.conn.close()
 	
-
 	def price_range(self):
 		df = self.df.replace(0, np.NaN)
 		mean = df['price'].mean()
@@ -62,10 +60,14 @@ class visual:
 			labels[index] = labels[index] + ' (' + "{:.2%}".format(val/sum(sizes)) + ')'
 
 		patches, texts = plt.pie(sizes, startangle=90)
-		plt.legend(patches, labels, loc="best",fontsize=10)
+
+		plt.legend(patches, labels, loc="best",fontsize=20)
 		plt.title('Price Range\n\n Average Price: $' + str(np.around(mean, decimals=2)))
+
 		plt.axis('equal')
 		plt.tight_layout()
+		
+		plt.gcf().set_size_inches(20,16)
 		plt.savefig(self.pp, format='pdf')
 
 	def clean_brand(self):
@@ -75,10 +77,10 @@ class visual:
 				if str(holder).lower() in str(values).lower():
 					df.at[index,'brand']= str(holder).upper()
 		self.df = df.replace('NAN',np.NaN)
-
+		
 	def brand(self):
 		self.clean_brand()
-		df = self.df.replace('n/a',np.NaN)
+		df = self.df
 		brand = dict(df['brand'].value_counts(ascending=False))			
 		total_brand = sum(brand.values())
 		top = 20
@@ -94,29 +96,68 @@ class visual:
 			if val <=0:
 				del sizes[index]
 				del labels[index]
-
+				
+		self.labels = labels.copy()
 		for index,val in enumerate(sizes):
 			labels[index] = labels[index] + ' (' + "{:.2%}".format(val/total_brand) + ')'
 		
 		patches, texts = plt.pie(sizes, startangle=90)
-		plt.legend(patches, labels, loc="best",fontsize=10)
+		plt.legend(patches, labels, loc="best",fontsize=20)
 		plt.title('Top '+ str(top) +' brands\n\n Total # of brands: ' + str(len(brand)))
 		plt.axis('equal')
 		plt.tight_layout()
+
+		plt.gcf().set_size_inches(20,16)
+		plt.savefig(self.pp, format='pdf')
+
+
+	def insert_data_labels(self,bars,ax):
+		for bar in bars:
+			bar_height = bar.get_height()
+			ax.annotate('{0:.0f}'.format(bar.get_height()),
+				xy=(bar.get_x() + bar.get_width() / 2, bar_height),
+				xytext=(0, 3),
+				textcoords='offset points',
+				ha='center',
+				va='bottom'
+)
+
+	def reviews(self):
+		df =self.df
+		labels = self.labels.copy()
+		df = df.groupby(['brand'])['reviews'].agg([np.sum,np.mean])
+		dataset = df.loc[labels] 
+
+		index = np.arange(len(labels))
+		maxx = int(dataset['sum'].values.astype(int).max())
+		total = dataset['sum'].values.astype(int).tolist()
+		mean = dataset['mean'].values.round(0).astype(int).tolist()
+
+		y_axis = np.arange(0, maxx, 10000)
+		bar_width = 0.5
+
+		fig,ax = plt.subplots(figsize=(20, 16))
+
+		barTotal = ax.bar(index - bar_width/2, total,bar_width,label='sum of reviews')
+		barmean = ax.bar(index + bar_width/2, mean,bar_width,label='average of reviews')
+		plt.tick_params(axis='x', which='major', labelsize=8)
+		plt.tight_layout()
+		ax.set_xticks(index)	
+		ax.set_xticklabels(labels)
+		plt.title('Top {} brands total & average reviews'.format(len(labels)))
+		ax.set_yticks(y_axis)
+		ax.set_yticklabels(y_axis)
+		ax.legend()
+		self.insert_data_labels(barTotal,ax)
+		self.insert_data_labels(barmean,ax)
+		plt.tight_layout()
 		plt.savefig(self.pp, format='pdf')
 		
-		#plt.show()
-
-
-
-
-
-
-
 
 if __name__ == "__main__":
 	obj = visual()
 	obj.price_range()
 	obj.brand()
+	obj.reviews()
 	obj.close_database()
 
