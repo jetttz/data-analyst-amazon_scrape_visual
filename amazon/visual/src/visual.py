@@ -11,13 +11,13 @@ from spiders import *
 class visual:
 
 	def __init__(self):
-		self.engine = create_engine('postgresql://pi:maoping@192.168.1.185:5432/amazon')
+		self.engine = create_engine('postgresql://pi:password@192.168.1.185:5432/amazon')
 		
 		query = '''SELECT * FROM Shaver; '''
 		self.df = pd.read_sql(query,self.engine)
 		#self.hostname = '192.168.1.185'
 		#self.username = 'pi'
-		#self.password = 'maoping'
+		#self.password = 'password'
 		#self.database='amazon'
 		self.labels = ''
 		self.pp = PdfPages('{}.pdf'.format(searchquery.searchitem.replace(' ','_')))

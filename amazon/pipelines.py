@@ -12,7 +12,7 @@ class AmazonPipeline:
 		self.exporter.start_exporting()
 		self.hostname = '192.168.1.185'
 		self.username = 'pi'
-		self.password = 'maoping'
+		self.password = 'password'
 		self.database='amazon'
 		self.conn = psycopg2.connect(host = self.hostname,database=self.database,user=self.username, password=self.password, port = 5432)
 		self.conn.autocommit = True
